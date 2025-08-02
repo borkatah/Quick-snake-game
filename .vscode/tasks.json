@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Raylib Project",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "${fileDirname}/main.cpp",
+                "-o",
+                "${fileDirname}/main",
+                "-I",
+                "${fileDirname}/raylib/src/",
+                "-L",
+                "${fileDirname}/raylib/src/",
+                "-lraylib",
+                "-lGL",
+                "-lm",
+                "-lpthread",
+                "-ldl",
+                "-lrt",
+                "-lX11"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Builds the C++ file with Raylib libraries from local directory"
+        }
+    ]
+}
