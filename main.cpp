@@ -12,9 +12,9 @@ using namespace std;
 Color brightgreen = {173, 204, 96, 255};
 Color darkgreen = {43, 51, 24, 255};
 
-//Grid parameters
-const int cell_count = 25;
-const int cell_size = 30;
+//Grid parameters - playing field
+const int cell_count = 40;
+const int cell_size = 25;
 
 
 //Snake parameters
@@ -54,7 +54,7 @@ public:
 //Snake
 class Snake{
 public:
-    
+    //initial position and movement direction of snake:
     deque<Vector2> snake_cells = {{12, 11}, {12, 12}, {12, 13}, {12, 14}, {12, 15}};
     Direction direction = stop;
     
@@ -122,7 +122,7 @@ public:
 
         const Vector2& head = snake_cells[0];
         
-        if(head.x > 24 || head.y > 24 || head.x < 0 || head.y < 0)
+        if(head.x > cell_count-1 || head.y > cell_count-1 || head.x < 0 || head.y < 0)
             return true;
 
         for(int i = 1; i < snake_cells.size(); i++){
@@ -147,37 +147,74 @@ bool check_eat(const Vector2& head, const Vector2& fruit){
 }
 
 
+class Score{
+public:
+
+    int value = 0;
+    const int horizontal_offset = 5;
+
+    void increment(){
+        value++;
+    }
+
+    void draw(){
+        DrawLine(0, cell_count * cell_size, cell_count * cell_size, cell_count * cell_size, BLACK);
+        DrawText(TextFormat("Score: %i", value) , horizontal_offset, cell_count * cell_size + 5, 20, BLACK);
+    }
+
+};
+
+
 int main(){
     
     cout << "Starting the game...";
-    InitWindow(cell_count*cell_size, cell_count * cell_size , "My Snake Game");
+    InitWindow(cell_count * cell_size, (cell_count + 1 ) * cell_size , "My Snake Game");
 
     SetTargetFPS(13);
     
+    Score score;
     Fruit fruit;
     Snake snake;
+    bool GameOver = false;
     while(WindowShouldClose() == false){
+        if(GameOver){
+            BeginDrawing();
 
-        bool is_eaten = check_eat(snake.snake_cells[0], fruit.position);
+            ClearBackground(brightgreen);
+
+            DrawText("Game Over!", (cell_count * cell_size) / 3, (cell_count * cell_size) / 2, 70, BLACK);
+
+            EndDrawing();
+        } else{
+
+            bool is_eaten = check_eat(snake.snake_cells[0], fruit.position);
         
         
-        if(is_eaten)
-            fruit.set_random_position();
+            if(is_eaten){
+                fruit.set_random_position();
+                score.increment();
 
-        if(snake.check_collision())
-            break;
+            }
+                
 
-        BeginDrawing();
+            if(snake.check_collision())
+                GameOver = true;
 
-        ClearBackground(brightgreen);
-        
-        
+            BeginDrawing();
+
+            ClearBackground(brightgreen);
             
-        fruit.draw();
-        snake.draw();
+            
+                
+            fruit.draw();
+            snake.draw();
+            score.draw();
 
-        EndDrawing();
-        snake.update_position(is_eaten);
+            EndDrawing();
+            snake.update_position(is_eaten);
+
+        }
+        
     }
 
 
